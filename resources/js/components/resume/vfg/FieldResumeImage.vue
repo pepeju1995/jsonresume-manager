@@ -21,7 +21,7 @@ export default {
     data() {
         return {
             reader: new FileReader(),
-            image: 'https://raw.githubusercontent.com/antoniosarosi/jsonresume-manager/master/storage/app/public/images/default.png',
+            image: this.model[this.schema.model],
         }
     },
 

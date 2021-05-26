@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreResume;
 use Illuminate\Http\Request;
+use App\Models\Resume;
+use Illuminate\Http\Response;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Str;
 
 class ResumeController extends Controller
 {
@@ -11,11 +16,51 @@ class ResumeController extends Controller
         $this->middleware('auth');
     }
 
+    
     public function create(){
+        $resume = json_encode(Resume::factory()->make());
+        return view('resumes.create', compact('resume'));
         return view('resumes.create');
     }
 
-    public function store(Request $request){
-    
+    private function savePicture($blob) {
+        $img = Image::make($blob);
+        $fileName = Str::uuid() . '.' . explode('/', $img->mime())[1];
+        $filePath = "/storage/pictures/$fileName";
+        $img->save(public_path($filePath));
+
+        return $filePath;
+    }
+
+    public function store(StoreResume $request){
+        $data = $request->validated();
+        $picture = $data['content']['basics']['picture'];
+        if ($picture !== '/storage/pictures/default.png') {
+            $data['content']['basics']['picture'] = $this->savePicture($picture);
+        }
+
+        $resume = auth()->user()->resumes()->create($data);
+
+        return response($resume, Response::HTTP_CREATED);
+    }
+
+    public function edit(Resume $resume) {
+        $this->authorize('update', $resume);
+
+        return view('resumes.edit', ['resume' => json_encode($resume)]);
+    }
+
+    public function update(StoreResume $request, Resume $resume) {
+        $this->authorize('update', $resume);
+
+        $data = $request->validated();
+        $picture = $data['content']['basics']['picture'];
+        if ($picture !== $resume->content['basics']['picture']) {
+            $data['content']['basics']['picture'] = $this->savePicture($picture);
+        }
+
+        $resume->update($data);
+        
+        return response(status: Response::HTTP_OK);
     }
 }
