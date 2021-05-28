@@ -14,7 +14,7 @@ class Resume extends Model
         'content',
     ];
 
-    protected $cast = [
+    protected $casts = [
         'content' => 'array',
     ];
 

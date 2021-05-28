@@ -5,7 +5,7 @@
         </div>
 
         <div class="card-body">
-            <div v-for="(input, i) in target[prop]" :key="i" class="d-flex mb-4 p-0">
+            <div v-for="(form, i) in target[prop]" :key="i" class="d-flex mb-4 p-0">
                 <div class="col-10 p-0">
                     <input
                         :placeholder="placeholder"
@@ -35,21 +35,20 @@ import mixin from './mixin';
 
 export default {
     name: 'ListForm',
+    
+    mixins: [mixin],
 
     props: {
         placeholder: {
             type: String,
-            default: () => '',
+            required: true,
         },
     },
-
-    mixins: [mixin],
 
     data() {
         return {
             push: () => '',
         }
-    },
-    
+    }, 
 }
 </script>

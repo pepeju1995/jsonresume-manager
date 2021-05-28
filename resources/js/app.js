@@ -20,7 +20,9 @@ window.Vue = require('vue').default;
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('ResumeForm', require('./components/resume/ResumeForm.vue').default);
+Vue.component('ListForm', require('./components/resume/dynamic/ListForm.vue').default);
 Vue.component('FieldResumeImage', require('./components/resume/vfg/FieldResumeImage.vue').default);
+Vue.component('Alert', require('./components/reusable/Alert.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

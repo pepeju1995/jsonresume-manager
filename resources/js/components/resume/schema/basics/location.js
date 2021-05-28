@@ -5,8 +5,8 @@ export default{
             type: 'input',
             inputType: 'text',
             placeholder: 'CalleMayor 117',
-            label: 'Adress',
-            model: 'adress',
+            label: 'Address',
+            model: 'address',
             styleClasses: ['col-md-4', 'p-0', 'pr-md-1'],
         },
         // Postal Code

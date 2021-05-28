@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreResume;
-use Illuminate\Http\Request;
 use App\Models\Resume;
 use Illuminate\Http\Response;
 use Intervention\Image\Facades\Image;
@@ -18,8 +17,8 @@ class ResumeController extends Controller
 
     
     public function create(){
-        $resume = json_encode(Resume::factory()->make());
-        return view('resumes.create', compact('resume'));
+        //$resume = json_encode(Resume::factory()->make());
+        //return view('resumes.create', compact('resume'));
         return view('resumes.create');
     }
 
@@ -51,8 +50,6 @@ class ResumeController extends Controller
     }
 
     public function update(StoreResume $request, Resume $resume) {
-        $this->authorize('update', $resume);
-
         $data = $request->validated();
         $picture = $data['content']['basics']['picture'];
         if ($picture !== $resume->content['basics']['picture']) {

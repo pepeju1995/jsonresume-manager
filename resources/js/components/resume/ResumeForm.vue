@@ -94,7 +94,7 @@
 </template>
 
 <script>
-import jsonresume from './jsonresume';
+import schema from './jsonresume';
 import basics from './schema/basics/basics';
 import location from './schema/basics/location';
 import profiles from './schema/basics/profiles';
@@ -108,7 +108,7 @@ import { component as VueFormGenerator } from 'vue-form-generator';
 import 'vue-form-generator/dist/vfg.css';
 import DynamicForm from './dynamic/DynamicForm';
 import ListForm from './dynamic/ListForm';
-import Alert from '../reusable/alert.vue';
+import Alert from '../reusable/Alert.vue';
 
 export default {
     name: 'ResumeForm',
@@ -128,7 +128,7 @@ export default {
             default: () => ({
                 id: null,
                 title: 'Resume Title',
-                content: jsonresume,
+                content: schema,
             })
         }
     },
@@ -192,14 +192,83 @@ export default {
     },
 
     methods: {
+        validate(target, parent = 'resume') {
+            let errors = [];
+            for (const [prop, value] of Object.entries(target)) {
+                if (Array.isArray(value)){
+                    if(value.length === 0) {
+                        errors.push(`${parent} > ${prop} must have at least one element`);
+                        continue;
+                    }
+                    for (const i in value) {
+                        if (typeof value[i] === null || value[i] === '') {
+                            errors.push(`${parent} > ${prop} > ${i} cannot be empty`);
+                        } else if (typeof value[i] === 'object') {
+                            errors = errors.concat(
+                                this.validate(value[i], `${parent} > ${prop} > ${i}`)
+                            );
+                        }
+                    }
+                    
+                } else if (typeof value === 'object') {
+                    errors = errors.concat(
+                        this.validate(value, `${parent} > ${prop}`)
+                    );
+
+                } else if (typeof value === null || value === '') {
+                    errors.push(`${parent} > ${prop} is required`);
+                }
+            }
+
+            return errors;
+        },
+
+        isValid() {
+            const { alert } = this.$data;
+            const { resume } = this.$props;
+            alert.messages = [];
+            const errors = this.validate(resume.content);
+            if (errors.length < 1) {
+                return true;
+            }
+
+            alert.messages = errors.slice(0, 3);
+            if(errors.length > 3) {
+                alert.messages.push(
+                    `<strong>${errors.length - 3} more errors...</strong>`
+                )
+            }
+
+            alert.type = 'warning';
+
+            return false;
+        },
+
         async submit() {
+            if (!this.isValid()) {
+                return;
+            }
             try {
                 const res = this.update
                     ? await axios.put(route('resumes.update', this.resume.id), this.resume)
                     : await axios.post(route('resumes.store'), this.resume);
                 console.log(res);
             } catch (e) {
-                console.log(e.response.data);
+                this.alert.messages = [];
+                const errors = e.response.data.errors;
+                for (const [prop, value] of Object.entries(errors)) {
+                    let origin = prop.split('.');
+                    if (origin[0] === 'content'){
+                        origin.splice(0, 1);
+                    }
+                    origin = origin.join('>');
+
+                    for (const error of value) {
+                        const message = error.replace(prop, `<strong>${origin}</strong>`)
+                        alert.messages.push(message);
+                    }
+                }
+                this.alert.type = 'danger';
             }
         }
     }

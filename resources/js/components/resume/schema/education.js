@@ -48,10 +48,9 @@ export default {
       // GPA
       {
         type: 'input',
-        inputType: 'number',
+        inputType: 'text',
         label: 'GPA',
         model: 'gpa',
-        validor: 'number',
         styleClasses: ['col-md-4', 'p-0'],
       },
     ],

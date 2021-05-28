@@ -32,7 +32,7 @@ export default {
         {
             type: 'input',
             inputType: 'date',
-            format: 'YYYY-MM-DD',
+            format: 'YYYY-MM-DD HH:mm:ss',
             placeholder: '1995-01-05',
             label: 'Start Date',
             model: 'startDate',
@@ -42,7 +42,7 @@ export default {
         {
             type: 'input',
             inputType: 'date',
-            format: 'YYYY-MM-DD',
+            format: 'YYYY-MM-DD HH:mm:ss',
             placeholder: '2000-01-05',
             label: 'End Date',
             model: 'endDate',
